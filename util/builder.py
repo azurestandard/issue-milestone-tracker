@@ -182,6 +182,7 @@ class Builder:
             key=lambda k: k['name'],
             reverse=True)
         counts_closed = counts_closed[:7]
+        print(counts_closed)
 
         counts = []
         for i in range(7):
@@ -196,8 +197,8 @@ class Builder:
             closed_total = ''
             if len(counts_closed) > i:
                 closed_day = counts_closed[i]['name']
-                closed_total = (counts_opened[i]['counts']['issues_closed'] +
-                    counts_opened[i]['counts']['pulls_closed'])
+                closed_total = (counts_closed[i]['counts']['issues_closed'] +
+                    counts_closed[i]['counts']['pulls_closed'])
 
             counts.append({
                 'opened_day': opened_day,
