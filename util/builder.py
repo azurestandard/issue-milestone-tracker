@@ -182,7 +182,6 @@ class Builder:
             key=lambda k: k['name'],
             reverse=True)
         counts_closed = counts_closed[:7]
-        print(counts_closed)
 
         counts = []
         for i in range(7):
