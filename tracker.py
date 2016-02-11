@@ -15,7 +15,7 @@ def main():
         parser.add_argument('--issue', '-i',
             required=True,
             help='Reference to GitHub issue to update. In the format ' \
-                 'of /{repository}/issues/{issue number}. (Required)' )
+                 'of {account}/{repository}/issues/{issue number}. (Required)' )
         parser.add_argument('--milestone', '-m',
             required=True,
             help='Milestone to filter on in repos. (Required)' )
@@ -60,8 +60,7 @@ def main():
         markdown = build.get_markdown(args.username)
 
         # Update our tracking issue
-        github.update_issue(markdown, '%s/%s' % (args.organization
-            , args.issue))
+        github.update_issue(markdown, '%s' % args.issue)
 
         # Write out the issue text to a file
         if args.file is not None:

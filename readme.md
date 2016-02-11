@@ -16,7 +16,7 @@ Parameters | Description
 ---------- | -----------
 -f, --file | Write markdown to local file.
 -h, --help | Show Help
--i, --issue | Reference to GitHub issue to update. In the format of /{repository}/issues/{issue number}. *(Required)*
+-i, --issue | Reference to GitHub issue to update. In the format of {account}/{repository}/issues/{issue number}. *(Required)*
 -m, --milestone | Milestone to filter on in repos. *(Required)*
 -o, --organization | Organization to scan. *(Required)*
 -p, --password | Your GitHub password. *(Required)*
