@@ -26,7 +26,6 @@ def main():
             required=True,
             help='Your GitHub password. (Required)')
         parser.add_argument('--timezone', '-t',
-            required=True,
             help='Timezone from the Olson database. (https://en.wikipedia' \
                  '.org/wiki/List_of_tz_database_time_zones)')
         parser.add_argument('--username', '-u',
