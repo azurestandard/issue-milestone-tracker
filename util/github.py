@@ -7,20 +7,33 @@ class GitHub:
         self.username = username
         self.password = password
         self.base_url = 'https://api.github.com'
+        self.per_page = 100
 
     def call(self, method, endpoint, params=None, data=None):
-        print('%s url: %s' % (method, endpoint))
         headers = {'Accept': 'application/vnd.github.v3+json'}
-        response = requests.request(method=method,
-            auth=(self.username, self.password),
-            headers=headers,
-            url=endpoint,
-            params=params,
-            data=data)
 
-        self.error_check(response)
+        items = []
+        while True:
+            response = requests.request(method=method,
+                auth=(self.username, self.password),
+                headers=headers,
+                url=endpoint,
+                params=params,
+                data=data)
 
-        return response.json()
+            self.error_check(response)
+
+            if type(response.json()) == dict:
+                return response.json()
+
+            items += response.json()
+
+            if 'next' in response.links:
+                endpoint = response.links['next']['url']
+            else:
+                break
+
+        return items
 
     def error_check(self, response):
         if response.status_code != 200:
@@ -31,7 +44,7 @@ class GitHub:
                 response.url,
                 error['documentation_url']))
 
-        return
+        return response
 
     def get_org(self, organization):
         endpoint = '%s/orgs/%s' % (self.base_url, organization)
@@ -41,8 +54,7 @@ class GitHub:
         endpoint = org['repos_url']
         params = {
             'sort': 'full_name',
-            'page': '1',
-            'per_page': '100'
+            'per_page': self.per_page
         }
         return self.call('get', endpoint, params)
 
@@ -52,8 +64,7 @@ class GitHub:
             repo_name)
         params = {
             'state': 'open',
-            'page': '1',
-            'per_page': '100'
+            'per_page': self.per_page
         }
         return self.call('get', endpoint, params)
 
@@ -64,10 +75,10 @@ class GitHub:
         params = {
             'state': 'all',
             'milestone': milestone_number,
-            'page': '1',
-            'per_page': '100'
+            'per_page': self.per_page
         }
         return self.call('get', endpoint, params)
+
 
     def update_issue(self, markdown, issue):
         endpoint = '%s/repos/%s' % (self.base_url, issue)
