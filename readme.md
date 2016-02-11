@@ -7,7 +7,7 @@ Pull requests are welcome.
 ## Sample Usage
 
 ```
-python3 tracker.py -u username -p password -o organization -i /{repository}/issues/{issue number} -m "My Milestone" -t "America/Los_Angeles"
+python3 tracker.py -u username -p password -o organization -i {account}/{repository}/issues/{issue number} -m "My Milestone" -t "America/Los_Angeles"
 ```
 
 ## Parameters
