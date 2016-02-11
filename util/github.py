@@ -3,14 +3,23 @@ import requests
 
 
 class GitHub:
-    def __init__(self, username, password):
+    def __init__(self, username, password, timezone=None):
         self.username = username
         self.password = password
+        self.timezone = timezone
         self.base_url = 'https://api.github.com'
         self.per_page = 100
 
     def call(self, method, endpoint, params=None, data=None):
-        headers = {'Accept': 'application/vnd.github.v3+json'}
+        if self.timezone is None:
+            headers = {
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        else:
+            headers = {
+                'Accept': 'application/vnd.github.v3+json',
+                'Time-Zone': self.timezone
+            }
 
         items = []
         while True:

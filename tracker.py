@@ -11,27 +11,31 @@ def main():
         parser = argparse.ArgumentParser(description='Multiple Issue Tracker ' \
                                                      'by Milestone on GitHub')
         parser.add_argument('--file', '-f',
-            help='Write markdown to local file.' )
+            help='Write markdown to local file.')
         parser.add_argument('--issue', '-i',
             required=True,
             help='Reference to GitHub issue to update. In the format ' \
-                 'of {account}/{repository}/issues/{issue number}. (Required)' )
+                 'of {account}/{repository}/issues/{issue number}. (Required)')
         parser.add_argument('--milestone', '-m',
             required=True,
-            help='Milestone to filter on in repos. (Required)' )
+            help='Milestone to filter on in repos. (Required)')
         parser.add_argument('--organization', '-o',
             required=True,
-            help='Organization to scan. (Required)' )
+            help='Organization to scan. (Required)')
         parser.add_argument('--password', '-p',
             required=True,
-            help='Your GitHub password. (Required)' )
+            help='Your GitHub password. (Required)')
+        parser.add_argument('--timezone', '-t',
+            required=True,
+            help='Timezone from the Olson database. (https://en.wikipedia' \
+                 '.org/wiki/List_of_tz_database_time_zones)')
         parser.add_argument('--username', '-u',
             required=True,
-            help='Your GitHub username. (Required)' )
+            help='Your GitHub username. (Required)')
 
         args = parser.parse_args()
 
-        github = GitHub(args.username, args.password)
+        github = GitHub(args.username, args.password, args.timezone)
         build = Builder(args.milestone, args.organization)
 
         # Get our organization
