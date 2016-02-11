@@ -20,5 +20,5 @@ Parameters | Description
 -m, --milestone | Milestone to filter on in repos. *(Required)*
 -o, --organization | Organization to scan. *(Required)*
 -p, --password | Your GitHub password. *(Required)*
--t, --timezone | Timezone from the [Olson]((https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) database.
+-t, --timezone | Timezone from the [Olson](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) database.
 -u, --username | Your GitHub username. *(Required)*
