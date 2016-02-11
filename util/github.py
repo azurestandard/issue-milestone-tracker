@@ -44,7 +44,7 @@ class GitHub:
                 response.url,
                 error['documentation_url']))
 
-        return response
+        return
 
     def get_org(self, organization):
         endpoint = '%s/orgs/%s' % (self.base_url, organization)
