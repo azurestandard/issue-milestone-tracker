@@ -63,14 +63,6 @@ class Builder:
                     closed_at.strftime('%Y-%m-%d'),
                     issue)
 
-            print('%s %s %s: %s %s **(%s)**' % (
-                created_at,
-                issue_type,
-                issue['number'],
-                issue['title'],
-                labels,
-                assignee))
-
             self.issue_list += '  - %s %s [#%s](%s): %s%s %s **(%s)**%s\n' % (
                 state,
                 issue_type,
