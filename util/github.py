@@ -25,14 +25,13 @@ class GitHub:
 
             if type(response.json()) == dict:
                 return response.json()
-
-            items += response.json()
-
-            if 'next' in response.links:
-                endpoint = response.links['next']['url']
             else:
-                break
+                items += response.json()
 
+                if 'next' in response.links:
+                    endpoint = response.links['next']['url']
+                else:
+                    break
         return items
 
     def error_check(self, response):
@@ -43,7 +42,6 @@ class GitHub:
                 error['message'],
                 response.url,
                 error['documentation_url']))
-
         return
 
     def get_org(self, organization):
