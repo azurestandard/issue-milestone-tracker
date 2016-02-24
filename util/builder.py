@@ -206,7 +206,7 @@ class Builder:
                 'closed_total': closed_total
             })
 
-        md = """Opened On | Total | <---------- Totals From Last 7 Days \
+        md = """Opened On | Total | <---------- Past 7 Work Day Totals \
  ----------> | Closed On | Total\n"""
         md += """:-- | --: | :--: | :-- | --:\n"""
         for value in counts:
