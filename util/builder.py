@@ -1,11 +1,13 @@
+import operator
 from datetime import datetime
+
 
 class Builder:
     def __init__(self, milestone_filter, organization):
         self.milestone_filter = milestone_filter
         self.organization = organization
 
-        self.issue_list = ''
+        self.issues = []
         self.assignee_counts = []
         self.label_counts = []
         self.repo_counts = []
@@ -13,9 +15,6 @@ class Builder:
         self.day_closed_counts = []
 
     def init(self, repo_name, issues):
-        self.issue_list += '\n## %s (Issues/Pulls: %s)\n\n' % (repo_name,
-            len(issues))
-
         for issue in issues:
             issue_type = 'Issue'
             if 'pull_request' in issue:
@@ -24,12 +23,6 @@ class Builder:
             assignee = 'unassigned'
             if issue['assignee'] is not None:
                 assignee = issue['assignee']['login']
-
-            state = '[ ]'
-            strike = ''
-            if issue['state'] == 'closed':
-                state = '[X]'
-                strike = '~~'
 
             labels = ''
             first = True
@@ -63,16 +56,24 @@ class Builder:
                     closed_at.strftime('%Y-%m-%d'),
                     issue)
 
-            self.issue_list += '  - %s %s [#%s](%s): %s%s %s **(%s)**%s\n' % (
-                state,
-                issue_type,
-                issue['number'],
-                issue['html_url'],
-                strike,
-                issue['title'],
-                labels,
-                assignee,
-                strike)
+            state_order = 'a'
+            if issue['state'] == 'closed':
+                state_order = 'b'
+
+            self.issues.append(('%s%s%s%s' % (repo_name,
+                state_order,
+                issue['state'],
+                assignee), {
+                    'repo': repo_name,
+                    'state': issue['state'],
+                    'type': issue_type,
+                    'number': issue['number'],
+                    'url': issue['html_url'],
+                    'title': issue['title'],
+                    'labels': labels,
+                    'assignee': assignee
+                }
+            ))
 
             self.assignee_counts = self.add_counts(self.assignee_counts,
                 assignee.lower(),
@@ -81,9 +82,6 @@ class Builder:
             self.repo_counts = self.add_counts(self.repo_counts,
                 repo_name.lower(),
                 issue)
-
-    def get_issue_list(self):
-        return self.issue_list
 
     def add_counts(self, counts, label, issue):
         add_item = True
@@ -218,6 +216,50 @@ class Builder:
 
         return md
 
+    def get_issue_detail_listing(self):
+        issues = sorted(self.issues, key = operator.itemgetter(0))
+
+        repo = ''
+        state = ''
+        assignee = ''
+        md = ''
+
+        for issue in issues:
+            issue = issue[1]
+            if repo != issue['repo']:
+                repo = issue['repo']
+                state = ''
+                assignee = ''
+                md += '\n### %s\n\n' % repo
+
+            if state != issue['state']:
+                state = issue['state']
+                assignee = ''
+                md += '- %s\n' % state
+
+            if assignee != issue['assignee']:
+                assignee = issue['assignee']
+                md += '  - %s\n' % assignee
+
+            box_state = '[ ]'
+            strike = ''
+            if issue['state'] == 'closed':
+                box_state = '[X]'
+                strike = '~~'
+
+            md += '    - %s %s [#%s](%s): %s%s%s%s\n' % (
+                box_state,
+                issue['type'],
+                issue['number'],
+                issue['url'],
+                strike,
+                issue['title'],
+                issue['labels'],
+                strike
+                )
+
+        return md
+
     def get_markdown(self, username):
         markdown = '# Overview\n\n'
         markdown += """This issue is automatically updated by a python script. \
@@ -236,8 +278,8 @@ preserved between updates.\n\n""" % (self.organization, self.milestone_filter)
         markdown += '## Days\n\n'
         markdown += self.get_day_chart(self.day_opened_counts,
             self.day_closed_counts)
-        markdown += '# Repository Issues\n\n'
-        markdown += self.issue_list
+        markdown += '# Repository Details by Repo, State, Assignee\n\n'
+        markdown += self.get_issue_detail_listing()
         markdown += '\n\n:calendar: **Last Updated:** *%s* **by** *%s*' % (
             datetime.now().strftime("%B %d, %Y  %r"),
             username)
