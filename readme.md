@@ -2,6 +2,8 @@
 
 This script will update a GitHub issue with statistics based on a milestone.  It builds these statistics from all repositories in a given organization.
 
+For a simple demo of the output see Issue [#3](https://github.com/azurestandard/issue-milestone-tracker/issues/3) on this repository.
+
 Pull requests are welcome.
 
 ## Sample Usage
