@@ -130,36 +130,50 @@ class Builder:
 
         return counts
 
-    def get_count_chart(self, counts, label, col_counts=True):
+    def get_count_chart(self, counts, label, row_counts=True, col_counts=True):
         issues_open = 0
         issues_closed = 0
         pulls_open = 0
         pulls_closed = 0
         counts = sorted(counts,
             key=lambda k: k['name'])
-        md = """%s | Issues Opened | Issues Closed | \
- Pulls Open | Pulls Closed | Open Totals | Closed Totals | Totals\n""" % label
-        md += """:-- | --: | --: | --: | --: | --: | --: | --:\n"""
+        if row_counts:
+            md = """%s | Issues Opened | Issues Closed | Pulls Open | \
+Pulls Closed | Open Totals | Closed Totals | Totals\n""" % label
+            md += """:-- | --: | --: | --: | --: | --: | --: | --:\n"""
+        else:
+            md = """%s | Issues Opened | Issues Closed | Pulls Open | \
+Pulls Closed\n""" % label
+            md += """:-- | --: | --: | --: | --:\n"""
         for value in counts:
-            issues_open += value['counts']['issues_open']
-            issues_closed += value['counts']['issues_closed']
-            pulls_open += value['counts']['pulls_open']
-            pulls_closed += value['counts']['pulls_closed']
+            if row_counts:
+                issues_open += value['counts']['issues_open']
+                issues_closed += value['counts']['issues_closed']
+                pulls_open += value['counts']['pulls_open']
+                pulls_closed += value['counts']['pulls_closed']
 
-            md += '**%s** | %s | %s | %s | %s | **%s** | **%s** | **%s**\n' % (
-                value['name'],
-                value['counts']['issues_open'],
-                value['counts']['issues_closed'],
-                value['counts']['pulls_open'],
-                value['counts']['pulls_closed'],
-                (value['counts']['issues_open'] +
-                    value['counts']['pulls_open']),
-                (value['counts']['issues_closed'] +
-                    value['counts']['pulls_closed']),
-                (value['counts']['issues_open'] +
-                    value['counts']['issues_closed'] +
-                    value['counts']['pulls_open'] +
-                    value['counts']['pulls_closed']))
+                md += '**%s** | %s | %s | %s | %s | **%s** | **%s** | \
+**%s**\n' % (
+                    value['name'],
+                    value['counts']['issues_open'],
+                    value['counts']['issues_closed'],
+                    value['counts']['pulls_open'],
+                    value['counts']['pulls_closed'],
+                    (value['counts']['issues_open'] +
+                        value['counts']['pulls_open']),
+                    (value['counts']['issues_closed'] +
+                        value['counts']['pulls_closed']),
+                    (value['counts']['issues_open'] +
+                        value['counts']['issues_closed'] +
+                        value['counts']['pulls_open'] +
+                        value['counts']['pulls_closed']))
+            else:
+                md += '**%s** | %s | %s | %s | %s\n' % (
+                    value['name'],
+                    value['counts']['issues_open'],
+                    value['counts']['issues_closed'],
+                    value['counts']['pulls_open'],
+                    value['counts']['pulls_closed'])
         if col_counts:
             md += '**Totals** | **%s** | **%s** | **%s** | **%s** |\n' % (
                 issues_open,
