@@ -2,6 +2,9 @@ import json
 import requests
 
 
+GITHUB_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+
 class GitHub:
     def __init__(self, username, password, timezone=None):
         self.username = username

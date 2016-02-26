@@ -1,5 +1,6 @@
 import operator
 from datetime import datetime
+from util.github import GITHUB_DATE_FORMAT
 
 
 class Builder:
@@ -13,8 +14,11 @@ class Builder:
         self.repo_counts = []
         self.day_opened_counts = []
         self.day_closed_counts = []
+        self.milestones = []
 
-    def init(self, repo_name, issues):
+    def add_issues(self, repo_name, issues, milestone):
+        self.milestones.append([repo_name, milestone])
+
         for issue in issues:
             issue_type = 'Issue'
             if 'pull_request' in issue:
@@ -250,11 +254,14 @@ Pulls Closed\n""" % label
             if state != issue['state']:
                 state = issue['state']
                 assignee = ''
-                md += '- %s\n' % state
+                if issue['state'] == 'open':
+                    md += '- :pencil2: %s\n' % state
+                else:
+                    md += '- :closed_book: %s\n' % state
 
             if assignee != issue['assignee']:
                 assignee = issue['assignee']
-                md += '  - %s\n' % assignee
+                md += '  - :bust_in_silhouette: %s\n' % assignee
 
             box_state = '[ ]'
             strike = ''
@@ -275,15 +282,66 @@ Pulls Closed\n""" % label
 
         return md
 
+    def get_milestone_totals(self):
+        percent_complete = 100
+        issues_open = 0
+        issues_closed = 0
+
+        for milestone in self.milestones:
+            milestone = milestone[1]
+            issues_open += int(milestone['open_issues'])
+            issues_closed += int(milestone['closed_issues'])
+
+        if issues_open != 0:
+            issues_total = issues_open + issues_closed
+            percent_complete = int(round((issues_open / issues_total) * 100))
+
+        md = ':checkered_flag: **Percentage Completed:** *%s*%%\n' % \
+            percent_complete
+        md += ':pencil2: **Issues Opened:** *%s*\n' % \
+            issues_open
+        md += ':closed_book: **Issues Closed:** *%s*\n' % \
+            issues_closed
+
+        return md
+
+    def get_milestone_detials(self):
+        milestones = sorted(self.milestones, key = operator.itemgetter(0))
+
+        md = 'Repository | Details\n'
+        md += ':-- | :--\n'
+        for milestone in self.milestones:
+            repo = milestone[0]
+            milestone = milestone[1]
+            due_on = datetime.strptime(milestone['due_on'], GITHUB_DATE_FORMAT)
+            md += '**[%s](%s)** | :notebook: **Description:** *%s*\n' % (
+                repo, milestone['html_url'], milestone['description'])
+            open_issues = milestone['open_issues']
+            percent_complete = 100
+            if open_issues != 0:
+                total_issues = open_issues + milestone['closed_issues']
+                percent_complete = int(round((open_issues / total_issues) * 100))
+            md += """ | :checkered_flag: **Percentage Completed:** *%s*%%\n""" \
+                % percent_complete
+            md += ' | :pencil2: **Opened:** *%s*\n' % \
+                milestone['open_issues']
+            md += ' | :closed_book: **Closed:** *%s*\n' % \
+                milestone['closed_issues']
+            md += ' | :calendar: **Due On:** *%s* (%s days from now)\n' \
+                % (due_on.strftime("%B %d, %Y"), (due_on - datetime.now()).days)
+            md += ' | \n'
+
+        return md
+
     def get_markdown(self, username):
         markdown = '# Overview\n\n'
-        markdown += """This issue is automatically updated by a python script. \
-This script goes through all `%s` repositories and lists issues \
-under the `%s` milestone.  There is no need to check off individual issues. \
-The script will is manually run to update the issue list periodically. \
-This script will check off closed items.  Comments on this issue will be \
-preserved between updates.\n\n""" % (self.organization, self.milestone_filter)
-        markdown += '# Aggregated Data\n\n'
+        markdown += 'Tracking of %s\'s repositories for milestone `%s`.\n\n' % (
+            self.organization, self.milestone_filter)
+        markdown += '### Overall Stats\n\n'
+        markdown += self.get_milestone_totals()
+        markdown += '### Milstone Details by Repository:\n\n'
+        markdown += self.get_milestone_detials()
+        markdown += '\n# Aggregated Data\n\n'
         markdown += '## Repositories\n\n'
         markdown += self.get_count_chart(self.repo_counts, 'Repository')
         markdown += '## Assignees\n\n'
@@ -296,6 +354,13 @@ preserved between updates.\n\n""" % (self.organization, self.milestone_filter)
             self.day_closed_counts)
         markdown += '# Repository Details by Repo, State, Assignee\n\n'
         markdown += self.get_issue_detail_listing()
+        markdown += '\n\n# Notes\n\n'
+        markdown += """This issue is automatically updated by a python script. \
+This script goes through all `%s` repositories and lists issues \
+under the `%s` milestone.  There is no need to check off individual issues. \
+The script will is manually run to update the issue list periodically. \
+This script will check off closed items.  Comments on this issue will be \
+preserved between updates.\n\n""" % (self.organization, self.milestone_filter)
         markdown += '\n\n:calendar: **Last Updated:** *%s* **by** *%s*' % (
             datetime.now().strftime("%B %d, %Y  %r"),
             username)

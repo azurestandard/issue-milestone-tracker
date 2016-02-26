@@ -58,7 +58,7 @@ def main():
 
                     if len(issues) > 0:
                         # Initialize our Builder
-                        build.init(repo['name'], issues)
+                        build.add_issues(repo['name'], issues, milestone)
 
         markdown = build.get_markdown(args.username)
 
