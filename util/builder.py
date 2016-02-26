@@ -156,21 +156,29 @@ Pulls Closed\n""" % label
                 pulls_open += value['counts']['pulls_open']
                 pulls_closed += value['counts']['pulls_closed']
 
+                total_open = value['counts']['issues_open'] + \
+                    value['counts']['pulls_open']
+                total_closed = value['counts']['issues_closed'] + \
+                    value['counts']['pulls_closed']
+                total_issues = total_open + total_closed
+                percent_complete = 100
+                if total_closed == 0:
+                    percent_complete = 0
+                elif total_open != 0:
+                    percent_complete = int(round((total_closed / total_issues) \
+                        * 100))
+
                 md += '**%s** | %s | %s | %s | %s | **%s** | **%s** | \
-**%s**\n' % (
+**%s** (*%s*%%)\n' % (
                     value['name'],
                     value['counts']['issues_open'],
                     value['counts']['issues_closed'],
                     value['counts']['pulls_open'],
                     value['counts']['pulls_closed'],
-                    (value['counts']['issues_open'] +
-                        value['counts']['pulls_open']),
-                    (value['counts']['issues_closed'] +
-                        value['counts']['pulls_closed']),
-                    (value['counts']['issues_open'] +
-                        value['counts']['issues_closed'] +
-                        value['counts']['pulls_open'] +
-                        value['counts']['pulls_closed']))
+                    total_open,
+                    total_closed,
+                    total_issues,
+                    percent_complete)
             else:
                 md += '**%s** | %s | %s | %s | %s\n' % (
                     value['name'],
@@ -292,9 +300,11 @@ Pulls Closed\n""" % label
             issues_open += int(milestone['open_issues'])
             issues_closed += int(milestone['closed_issues'])
 
-        if issues_open != 0:
-            issues_total = issues_open + issues_closed
-            percent_complete = int(round((issues_open / issues_total) * 100))
+        issues_total = issues_open + issues_closed
+        if issues_closed == 0:
+            percent_complete = 0
+        elif issues_open != 0:
+            percent_complete = int(round((issues_closed / issues_total) * 100))
 
         md = ':checkered_flag: **Percentage Completed:** *%s*%%\n' % \
             percent_complete
@@ -302,6 +312,8 @@ Pulls Closed\n""" % label
             issues_open
         md += ':closed_book: **Issues Closed:** *%s*\n' % \
             issues_closed
+        md += ':heavy_check_mark: **Issues Total:** *%s*\n' % \
+            issues_total
 
         return md
 
@@ -314,13 +326,16 @@ Pulls Closed\n""" % label
             repo = milestone[0]
             milestone = milestone[1]
             due_on = datetime.strptime(milestone['due_on'], GITHUB_DATE_FORMAT)
-            md += '**[%s](%s)** | :notebook: **Description:** *%s*\n' % (
+            md += '**[%s](%s)** | :page_facing_up: **Description:** *%s*\n' % (
                 repo, milestone['html_url'], milestone['description'])
             open_issues = milestone['open_issues']
+            closed_issues = milestone['closed_issues']
             percent_complete = 100
-            if open_issues != 0:
-                total_issues = open_issues + milestone['closed_issues']
-                percent_complete = int(round((open_issues / total_issues) * 100))
+            if closed_issues == 0:
+                percent_complete = 0
+            elif open_issues != 0:
+                total_issues = open_issues + closed_issues
+                percent_complete = int(round((closed_issues / total_issues) * 100))
             md += """ | :checkered_flag: **Percentage Completed:** *%s*%%\n""" \
                 % percent_complete
             md += ' | :pencil2: **Opened:** *%s*\n' % \
@@ -342,14 +357,14 @@ Pulls Closed\n""" % label
         markdown += '### Milstone Details by Repository:\n\n'
         markdown += self.get_milestone_detials()
         markdown += '\n# Aggregated Data\n\n'
-        markdown += '## Repositories\n\n'
+        markdown += '## :chart: Repositories\n\n'
         markdown += self.get_count_chart(self.repo_counts, 'Repository')
-        markdown += '## Assignees\n\n'
+        markdown += '## :chart: Assignees\n\n'
         markdown += self.get_count_chart(self.assignee_counts, 'Assignee')
-        markdown += '## Labels\n\n'
+        markdown += '## :chart: Labels\n\n'
         markdown += self.get_count_chart(self.label_counts, 'Label',
             col_counts=False)
-        markdown += '## Days\n\n'
+        markdown += '## :chart: Days\n\n'
         markdown += self.get_day_chart(self.day_opened_counts,
             self.day_closed_counts)
         markdown += '# Repository Details by Repo, State, Assignee\n\n'
