@@ -367,7 +367,7 @@ Pulls Closed\n""" % label
         markdown += '## :chart: Days\n\n'
         markdown += self.get_day_chart(self.day_opened_counts,
             self.day_closed_counts)
-        markdown += '# Repository Details by Repo, State, Assignee\n\n'
+        markdown += '# Repository Details\n\n'
         markdown += self.get_issue_detail_listing()
         markdown += '\n\n# Notes\n\n'
         markdown += """This issue is automatically updated by a python script. \
