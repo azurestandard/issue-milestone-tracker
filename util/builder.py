@@ -130,7 +130,7 @@ class Builder:
 
         return counts
 
-    def get_count_chart(self, counts, label):
+    def get_count_chart(self, counts, label, col_counts=True):
         issues_open = 0
         issues_closed = 0
         pulls_open = 0
@@ -160,11 +160,12 @@ class Builder:
                     value['counts']['issues_closed'] +
                     value['counts']['pulls_open'] +
                     value['counts']['pulls_closed']))
-        md += '**Totals** | **%s** | **%s** | **%s** | **%s** |\n' % (
-            issues_open,
-            issues_closed,
-            pulls_open,
-            pulls_closed)
+        if col_counts:
+            md += '**Totals** | **%s** | **%s** | **%s** | **%s** |\n' % (
+                issues_open,
+                issues_closed,
+                pulls_open,
+                pulls_closed)
 
         return md
 
@@ -274,7 +275,8 @@ preserved between updates.\n\n""" % (self.organization, self.milestone_filter)
         markdown += '## Assignees\n\n'
         markdown += self.get_count_chart(self.assignee_counts, 'Assignee')
         markdown += '## Labels\n\n'
-        markdown += self.get_count_chart(self.label_counts, 'Label')
+        markdown += self.get_count_chart(self.label_counts, 'Label',
+            col_counts=False)
         markdown += '## Days\n\n'
         markdown += self.get_day_chart(self.day_opened_counts,
             self.day_closed_counts)
