@@ -335,15 +335,24 @@ Pulls Closed\n""" % label
                 percent_complete = 0
             elif open_issues != 0:
                 total_issues = open_issues + closed_issues
-                percent_complete = int(round((closed_issues / total_issues) * 100))
+                percent_complete = int(round((closed_issues / total_issues) \
+                    * 100))
             md += """ | :checkered_flag: **Percentage Completed:** *%s*%%\n""" \
                 % percent_complete
             md += ' | :pencil2: **Opened:** *%s*\n' % \
                 milestone['open_issues']
             md += ' | :closed_book: **Closed:** *%s*\n' % \
                 milestone['closed_issues']
-            md += ' | :calendar: **Due On:** *%s* (%s days from now)\n' \
-                % (due_on.strftime("%B %d, %Y"), (due_on - datetime.now()).days)
+            days = (due_on.date() - datetime.now().date()).days
+            day_text = ''
+            if days < 0:
+                day_text = '%s days ago' % abs(days)
+            elif days == 0:
+                day_text = 'Today'
+            elif days > 0:
+                day_text = '%s days from now' % days
+            md += ' | :calendar: **Due On:** *%s* (%s)\n' \
+                % (due_on.strftime("%B %d, %Y"), day_text)
             md += ' | \n'
 
         return md
