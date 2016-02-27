@@ -305,9 +305,12 @@ Pulls Closed\n""" % label
             percent_complete = 0
         elif issues_open != 0:
             percent_complete = int(round((issues_closed / issues_total) * 100))
+        party = ''
+        if percent_complete == 100:
+            party = ' :tada:'
 
-        md = ':checkered_flag: **Percentage Completed:** *%s*%%\n' % \
-            percent_complete
+        md = ':checkered_flag: **Percentage Completed:** *%s*%%%s\n' % \
+            (percent_complete, party)
         md += ':pencil2: **Issues Opened:** *%s*\n' % \
             issues_open
         md += ':closed_book: **Issues Closed:** *%s*\n' % \
@@ -337,8 +340,12 @@ Pulls Closed\n""" % label
                 total_issues = open_issues + closed_issues
                 percent_complete = int(round((closed_issues / total_issues) \
                     * 100))
-            md += """ | :checkered_flag: **Percentage Completed:** *%s*%%\n""" \
-                % percent_complete
+            party = ''
+            if percent_complete == 100:
+                party = ' :tada:'
+
+            md += """ | :checkered_flag: **Percentage Completed:** *%s*%%%s \
+\n""" % (percent_complete, party)
             md += ' | :pencil2: **Opened:** *%s*\n' % \
                 milestone['open_issues']
             md += ' | :closed_book: **Closed:** *%s*\n' % \
