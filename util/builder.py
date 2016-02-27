@@ -376,7 +376,9 @@ under the `%s` milestone.  There is no need to check off individual issues. \
 The script will is manually run to update the issue list periodically. \
 This script will check off closed items.  Comments on this issue will be \
 preserved between updates.\n\n""" % (self.organization, self.milestone_filter)
-        markdown += '\n\n:calendar: **Last Updated:** *%s* **by** *%s*' % (
+        markdown += """\n\n:calendar: **Last Updated:** *%s* **By:** *%s*.  \
+**Via:** [issue-milestone-tracker]\
+(https://github.com/azurestandard/issue-milestone-tracker).""" % (
             datetime.now().strftime("%B %d, %Y  %r"),
             username)
 
