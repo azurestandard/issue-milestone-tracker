@@ -366,7 +366,7 @@ Pulls Closed\n""" % label
 
     def get_markdown(self, username):
         markdown = '# Overview\n\n'
-        markdown += 'Tracking of %s\'s repositories for milestone `%s`.\n\n' % (
+        markdown += 'Tracking of `%s`\'s repositories for milestone `%s`.\n\n' % (
             self.organization, self.milestone_filter)
         markdown += '### Overall Stats\n\n'
         markdown += self.get_milestone_totals()
@@ -386,7 +386,8 @@ Pulls Closed\n""" % label
         markdown += '# Repository Details\n\n'
         markdown += self.get_issue_detail_listing()
         markdown += '\n\n# Notes\n\n'
-        markdown += """This issue is automatically updated by a python script. \
+        markdown += """This issue is automatically updated by a [python script] \
+(https://github.com/azurestandard/issue-milestone-tracker). \
 This script goes through all `%s` repositories and lists issues \
 under the `%s` milestone.  There is no need to check off individual issues. \
 The script will is manually run to update the issue list periodically. \
@@ -395,7 +396,7 @@ preserved between updates.\n\n""" % (self.organization, self.milestone_filter)
         markdown += """\n\n:calendar: **Last Updated:** *%s* **By:** *%s*.  \
 **Via:** [issue-milestone-tracker]\
 (https://github.com/azurestandard/issue-milestone-tracker).""" % (
-            datetime.now().strftime("%B %d, %Y  %r"),
+            datetime.now().strftime("%B %d, %Y at %r"),
             username)
 
         return markdown
