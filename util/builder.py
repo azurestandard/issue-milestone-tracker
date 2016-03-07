@@ -263,13 +263,13 @@ Pulls Closed\n""" % label
                 state = issue['state']
                 assignee = ''
                 if issue['state'] == 'open':
-                    md += '- :pencil2: %s\n' % state
+                    md += '- :pencil2: **%s**\n' % state
                 else:
-                    md += '- :closed_book: %s\n' % state
+                    md += '- :closed_book: **%s**\n' % state
 
             if assignee != issue['assignee']:
                 assignee = issue['assignee']
-                md += '  - :bust_in_silhouette: %s\n' % assignee
+                md += '  - :bust_in_silhouette: **%s**\n' % assignee
 
             box_state = '[ ]'
             strike = ''
@@ -277,12 +277,12 @@ Pulls Closed\n""" % label
                 box_state = '[X]'
                 strike = '~~'
 
-            md += '    - %s %s [#%s](%s): %s%s%s%s\n' % (
+            md += '    - %s %s%s [#%s](%s): %s%s%s\n' % (
                 box_state,
+                strike,
                 issue['type'],
                 issue['number'],
                 issue['url'],
-                strike,
                 issue['title'],
                 issue['labels'],
                 strike
@@ -315,7 +315,7 @@ Pulls Closed\n""" % label
             issues_open
         md += ':closed_book: **Issues Closed:** *%s*\n' % \
             issues_closed
-        md += ':heavy_check_mark: **Issues Total:** *%s*\n' % \
+        md += ':heavy_check_mark: **Issues Total:** *%s*\n\n' % \
             issues_total
 
         return md
@@ -375,17 +375,17 @@ Pulls Closed\n""" % label
         markdown += '\n# Aggregated Data\n\n'
         markdown += '## :chart: Repositories\n\n'
         markdown += self.get_count_chart(self.repo_counts, 'Repository')
-        markdown += '## :chart: Assignees\n\n'
+        markdown += '\n## :chart: Assignees\n\n'
         markdown += self.get_count_chart(self.assignee_counts, 'Assignee')
-        markdown += '## :chart: Labels\n\n'
+        markdown += '\n## :chart: Labels\n\n'
         markdown += self.get_count_chart(self.label_counts, 'Label',
             col_counts=False)
-        markdown += '## :chart: Days\n\n'
+        markdown += '\n## :chart: Days\n\n'
         markdown += self.get_day_chart(self.day_opened_counts,
             self.day_closed_counts)
-        markdown += '# Repository Details\n\n'
+        markdown += '\n# Repository Details\n'
         markdown += self.get_issue_detail_listing()
-        markdown += '\n\n# Notes\n\n'
+        markdown += '\n# Notes\n\n'
         markdown += """This issue is automatically updated by a [python script] \
 (https://github.com/azurestandard/issue-milestone-tracker). \
 This script goes through all `%s` repositories and lists issues \
@@ -393,7 +393,7 @@ under the `%s` milestone.  There is no need to check off individual issues. \
 The script will is manually run to update the issue list periodically. \
 This script will check off closed items.  Comments on this issue will be \
 preserved between updates.\n\n""" % (self.organization, self.milestone_filter)
-        markdown += """\n\n:calendar: **Last Updated:** *%s* **By:** *%s*.  \
+        markdown += """:calendar: **Last Updated:** *%s* **By:** *%s*.  \
 **Via:** [issue-milestone-tracker]\
 (https://github.com/azurestandard/issue-milestone-tracker).""" % (
             datetime.now().strftime("%B %d, %Y at %r"),
