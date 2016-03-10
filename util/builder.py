@@ -328,9 +328,14 @@ Pulls Closed\n""" % label
         for milestone in self.milestones:
             repo = milestone[0]
             milestone = milestone[1]
-            due_on = datetime.strptime(milestone['due_on'], GITHUB_DATE_FORMAT)
+            due_on = None
+            if milestone['due_on']:
+                due_on = datetime.strptime(milestone['due_on'], GITHUB_DATE_FORMAT)
+            description = 'N/A'
+            if milestone['description']:
+                description = milestone['description']
             md += '**[%s](%s)** | :page_facing_up: **Description:** *%s*\n' % (
-                repo, milestone['html_url'], milestone['description'])
+                repo, milestone['html_url'], description)
             open_issues = milestone['open_issues']
             closed_issues = milestone['closed_issues']
             percent_complete = 100
@@ -350,7 +355,9 @@ Pulls Closed\n""" % label
                 milestone['open_issues']
             md += ' | :closed_book: **Closed:** *%s*\n' % \
                 milestone['closed_issues']
-            days = (due_on.date() - datetime.now().date()).days
+            days = 0
+            if due_on:
+                days = (due_on.date() - datetime.now().date()).days
             day_text = ''
             if days < 0:
                 day_text = '%s days ago' % abs(days)
@@ -358,8 +365,11 @@ Pulls Closed\n""" % label
                 day_text = 'Today'
             elif days > 0:
                 day_text = '%s days from now' % days
-            md += ' | :calendar: **Due On:** *%s* (%s)\n' \
-                % (due_on.strftime("%B %d, %Y"), day_text)
+            if due_on:
+                md += ' | :calendar: **Due On:** *%s* (%s)\n' \
+                    % (due_on.strftime("%B %d, %Y"), day_text)
+            else:
+                md += ' | :calendar: **Due On:** *N/A*\n'
             md += ' | \n'
 
         return md
