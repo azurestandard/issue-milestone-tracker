@@ -4,6 +4,18 @@ This script will update a GitHub issue with statistics based on a milestone.  It
 
 Pull requests are welcome.
 
+## Install
+
+To install run the following:
+
+```
+git clone git@github.com:azurestandard/issue-milestone-tracker.git
+virtualenv -p python3 ~/.envs/issue-milestone-tracker
+source ~/.envs/issue-milestone-tracker/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
 ## Sample Usage
 
 ```
