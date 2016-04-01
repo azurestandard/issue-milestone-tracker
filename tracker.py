@@ -1,4 +1,3 @@
-import os
 import sys
 import argparse
 import traceback
@@ -8,29 +7,32 @@ from util.builder import Builder
 
 def main():
     try:
-        parser = argparse.ArgumentParser(description='Multiple Issue Tracker ' \
-                                                     'by Milestone on GitHub')
+        parser = argparse.ArgumentParser(description='Multiple Issue '
+                                         'Tracker by Milestone on GitHub')
         parser.add_argument('--file', '-f',
-            help='Write markdown to local file.')
+                            help='Write markdown to local file.')
         parser.add_argument('--issue', '-i',
-            required=True,
-            help='Reference to GitHub issue to update. In the format ' \
-                 'of {account}/{repository}/issues/{issue number}. (Required)')
+                            required=True,
+                            help='Reference to GitHub issue to update. '
+                            'In the format of {account}/{repository}/'
+                            'issues/{issue number}. (Required)')
         parser.add_argument('--milestone', '-m',
-            required=True,
-            help='Milestone to filter on in repos. (Required)')
+                            required=True,
+                            help='Milestone to filter on in repos. '
+                            '(Required)')
         parser.add_argument('--organization', '-o',
-            required=True,
-            help='Organization to scan. (Required)')
+                            required=True,
+                            help='Organization to scan. (Required)')
         parser.add_argument('--password', '-p',
-            required=True,
-            help='Your GitHub password. (Required)')
+                            required=True,
+                            help='Your GitHub password. (Required)')
         parser.add_argument('--timezone', '-t',
-            help='Timezone from the Olson database. (https://en.wikipedia' \
-                 '.org/wiki/List_of_tz_database_time_zones)')
+                            help='Timezone from the Olson database. '
+                            '(https://en.wikipedia.org/wiki/List_of_'
+                            'tz_database_time_zones)')
         parser.add_argument('--username', '-u',
-            required=True,
-            help='Your GitHub username. (Required)')
+                            required=True,
+                            help='Your GitHub username. (Required)')
 
         args = parser.parse_args()
 
@@ -47,14 +49,14 @@ def main():
         for repo in repos:
             # Get a list of milestones in the repository
             milestones = github.get_milestones(args.organization,
-                repo['name'])
+                                               repo['name'])
 
             for milestone in milestones:
                 if milestone['title'] == args.milestone:
                     # Get a list of issues in this milestone
                     issues = github.get_issues(args.organization,
-                        repo['name'],
-                        milestone['number'])
+                                               repo['name'],
+                                               milestone['number'])
 
                     if len(issues) > 0:
                         # Initialize our Builder
@@ -71,7 +73,7 @@ def main():
                 out.truncate()
                 out.write(markdown)
 
-    except Exception as err:
+    except:
         print('\n')
         traceback.print_exc(file=sys.stdout)
         print('\n')
