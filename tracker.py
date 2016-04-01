@@ -65,7 +65,7 @@ def main():
         markdown = build.get_markdown(args.username)
 
         # Update our tracking issue
-        github.update_issue(markdown, '%s' % args.issue)
+        github.update_issue(markdown, '{}'.format(args.issue))
 
         # Write out the issue text to a file
         if args.file is not None:

@@ -33,30 +33,36 @@ class Builder:
             if len(issue['labels']) > 0:
                 for label in issue['labels']:
                     if first:
-                        labels += '`%s`' % label['name']
+                        labels += '`{}`'.format(label['name'])
                         first = False
                     else:
-                        labels += ', `%s`' % label['name']
+                        labels += ', `{}`'.format(label['name'])
 
-                    self.label_counts = self.add_counts(self.label_counts,
+                    self.label_counts = self.add_counts(
+                        self.label_counts,
                         label['name'].lower(),
                         issue)
             else:
-                self.label_counts = self.add_counts(self.label_counts,
+                self.label_counts = self.add_counts(
+                    self.label_counts,
                     'none',
                     issue)
 
             if issue['created_at'] is not None:
-                created_at = datetime.strptime(issue['created_at'],
+                created_at = datetime.strptime(
+                    issue['created_at'],
                     '%Y-%m-%dT%H:%M:%SZ')
-                self.day_opened_counts = self.add_counts(self.day_opened_counts,
+                self.day_opened_counts = self.add_counts(
+                    self.day_opened_counts,
                     created_at.strftime('%Y-%m-%d'),
                     issue)
 
             if issue['closed_at'] is not None:
-                closed_at = datetime.strptime(issue['closed_at'],
+                closed_at = datetime.strptime(
+                    issue['closed_at'],
                     '%Y-%m-%dT%H:%M:%SZ')
-                self.day_closed_counts = self.add_counts(self.day_closed_counts,
+                self.day_closed_counts = self.add_counts(
+                    self.day_closed_counts,
                     closed_at.strftime('%Y-%m-%d'),
                     issue)
 
@@ -64,7 +70,8 @@ class Builder:
             if issue['state'] == 'closed':
                 state_order = 'b'
 
-            self.issues.append(('%s%s%s%s' % (repo_name,
+            self.issues.append(('{}{}{}{}'.format(
+                repo_name,
                 state_order,
                 issue['state'],
                 assignee), {
@@ -79,11 +86,13 @@ class Builder:
                 }
             ))
 
-            self.assignee_counts = self.add_counts(self.assignee_counts,
+            self.assignee_counts = self.add_counts(
+                self.assignee_counts,
                 assignee.lower(),
                 issue)
 
-            self.repo_counts = self.add_counts(self.repo_counts,
+            self.repo_counts = self.add_counts(
+                self.repo_counts,
                 repo_name.lower(),
                 issue)
 
@@ -139,16 +148,16 @@ class Builder:
         issues_closed = 0
         pulls_open = 0
         pulls_closed = 0
-        counts = sorted(counts,
-            key=lambda k: k['name'])
+        counts = sorted(counts, key=lambda k: k['name'])
         if row_counts:
-            md = """%s | Issues Opened | Issues Closed | Pulls Open | \
-Pulls Closed | Open Totals | Closed Totals | Totals\n""" % label
-            md += """:-- | --: | --: | --: | --: | --: | --: | --:\n"""
+            md = ('{} | Issues Opened | Issues Closed | Pulls Open |'
+                  'Pulls Closed | Open Totals | Closed Totals | '
+                  'Totals\n'.format(label))
+            md += ':-- | --: | --: | --: | --: | --: | --: | --:\n'
         else:
-            md = """%s | Issues Opened | Issues Closed | Pulls Open | \
-Pulls Closed\n""" % label
-            md += """:-- | --: | --: | --: | --:\n"""
+            md = ('{} | Issues Opened | Issues Closed | Pulls Open |'
+                  'Pulls Closed\n'.format(label))
+            md += ':-- | --: | --: | --: | --:\n'
         for value in counts:
             if row_counts:
                 issues_open += value['counts']['issues_open']
@@ -165,29 +174,29 @@ Pulls Closed\n""" % label
                 if total_closed == 0:
                     percent_complete = 0
                 elif total_open != 0:
-                    percent_complete = int(round((total_closed / total_issues) \
-                        * 100))
+                    percent_complete = int(
+                        round((total_closed / total_issues) * 100))
 
-                md += '**%s** | %s | %s | %s | %s | **%s** | **%s** | \
-**%s** (*%s*%%)\n' % (
-                    value['name'],
-                    value['counts']['issues_open'],
-                    value['counts']['issues_closed'],
-                    value['counts']['pulls_open'],
-                    value['counts']['pulls_closed'],
-                    total_open,
-                    total_closed,
-                    total_issues,
-                    percent_complete)
+                md += ('**{}** | {} | {} | {} | {} | **{}** | **{}** |'
+                       '**{}** (*{}*%)\n'.format(
+                           value['name'],
+                           value['counts']['issues_open'],
+                           value['counts']['issues_closed'],
+                           value['counts']['pulls_open'],
+                           value['counts']['pulls_closed'],
+                           total_open,
+                           total_closed,
+                           total_issues,
+                           percent_complete))
             else:
-                md += '**%s** | %s | %s | %s | %s\n' % (
+                md += '**{}** | {} | {} | {} | {}\n'.format(
                     value['name'],
                     value['counts']['issues_open'],
                     value['counts']['issues_closed'],
                     value['counts']['pulls_open'],
                     value['counts']['pulls_closed'])
         if col_counts:
-            md += '**Totals** | **%s** | **%s** | **%s** | **%s** |\n' % (
+            md += '**Totals** | **{}** | **{}** | **{}** | **{}** |\n'.format(
                 issues_open,
                 issues_closed,
                 pulls_open,
@@ -196,14 +205,14 @@ Pulls Closed\n""" % label
         return md
 
     def get_day_chart(self, counts_opened, counts_closed):
-        opened = 0
-        counts_opened = sorted(counts_opened,
+        counts_opened = sorted(
+            counts_opened,
             key=lambda k: k['name'],
             reverse=True)
         counts_opened = counts_opened[:7]
 
-        closed = 0
-        counts_closed = sorted(counts_closed,
+        counts_closed = sorted(
+            counts_closed,
             key=lambda k: k['name'],
             reverse=True)
         counts_closed = counts_closed[:7]
@@ -214,14 +223,16 @@ Pulls Closed\n""" % label
             opened_total = None
             if len(counts_opened) > i:
                 opened_day = counts_opened[i]['name']
-                opened_total = (counts_opened[i]['counts']['issues_open'] +
+                opened_total = (
+                    counts_opened[i]['counts']['issues_open'] +
                     counts_opened[i]['counts']['pulls_open'])
 
             closed_day = ''
             closed_total = ''
             if len(counts_closed) > i:
                 closed_day = counts_closed[i]['name']
-                closed_total = (counts_closed[i]['counts']['issues_closed'] +
+                closed_total = (
+                    counts_closed[i]['counts']['issues_closed'] +
                     counts_closed[i]['counts']['pulls_closed'])
 
             counts.append({
@@ -231,11 +242,11 @@ Pulls Closed\n""" % label
                 'closed_total': closed_total
             })
 
-        md = """Opened On | Total | <---------- Past 7 Work Day Totals \
- ----------> | Closed On | Total\n"""
-        md += """:-- | --: | :--: | :-- | --:\n"""
+        md = ('Opened On | Total | <---------- Past 7 Work Day Totals'
+              ' ----------> | Closed On | Total\n')
+        md += ':-- | --: | :--: | :-- | --:\n'
         for value in counts:
-            md += '**%s** | %s | | **%s** | %s\n' % (
+            md += '**{}** | {} | | **{}** | {}\n'.format(
                 value['opened_day'],
                 value['opened_total'],
                 value['closed_day'],
@@ -244,7 +255,7 @@ Pulls Closed\n""" % label
         return md
 
     def get_issue_detail_listing(self):
-        issues = sorted(self.issues, key = operator.itemgetter(0))
+        issues = sorted(self.issues, key=operator.itemgetter(0))
 
         repo = ''
         state = ''
@@ -257,19 +268,19 @@ Pulls Closed\n""" % label
                 repo = issue['repo']
                 state = ''
                 assignee = ''
-                md += '\n### %s\n\n' % repo
+                md += '\n### {}\n\n'.format(repo)
 
             if state != issue['state']:
                 state = issue['state']
                 assignee = ''
                 if issue['state'] == 'open':
-                    md += '- :pencil2: **%s**\n' % state
+                    md += '- :pencil2: **{}**\n'.format(state)
                 else:
-                    md += '- :closed_book: **%s**\n' % state
+                    md += '- :closed_book: **{}**\n'.format(state)
 
             if assignee != issue['assignee']:
                 assignee = issue['assignee']
-                md += '  - :bust_in_silhouette: **%s**\n' % assignee
+                md += '  - :bust_in_silhouette: **{}**\n'.format(assignee)
 
             box_state = '[ ]'
             strike = ''
@@ -277,7 +288,7 @@ Pulls Closed\n""" % label
                 box_state = '[X]'
                 strike = '~~'
 
-            md += '    - %s %s%s [#%s](%s): %s%s%s\n' % (
+            md += '    - {} {}{} [#{}]({}): {}{}{}\n'.format(
                 box_state,
                 strike,
                 issue['type'],
@@ -309,20 +320,18 @@ Pulls Closed\n""" % label
         if percent_complete == 100:
             party = ' :tada:'
 
-        md = ':checkered_flag: **Percentage Completed:** *%s*%%%s\n' % \
-            (percent_complete, party)
-        md += ':pencil2: **Issues Opened:** *%s*\n' % \
-            issues_open
-        md += ':closed_book: **Issues Closed:** *%s*\n' % \
-            issues_closed
-        md += ':heavy_check_mark: **Issues Total:** *%s*\n\n' % \
-            issues_total
+        md = ':checkered_flag: **Percentage Completed:** *{}*%{}\n'.format(
+            percent_complete, party)
+        md += ':pencil2: **Issues Opened:** *{}*\n'.format(
+            issues_open)
+        md += ':closed_book: **Issues Closed:** *{}*\n'.format(
+            issues_closed)
+        md += ':heavy_check_mark: **Issues Total:** *{}*\n\n'.format(
+            issues_total)
 
         return md
 
     def get_milestone_detials(self):
-        milestones = sorted(self.milestones, key = operator.itemgetter(0))
-
         md = 'Repository | Details\n'
         md += ':-- | :--\n'
         for milestone in self.milestones:
@@ -330,12 +339,15 @@ Pulls Closed\n""" % label
             milestone = milestone[1]
             due_on = None
             if milestone['due_on']:
-                due_on = datetime.strptime(milestone['due_on'], GITHUB_DATE_FORMAT)
+                due_on = datetime.strptime(
+                    milestone['due_on'],
+                    GITHUB_DATE_FORMAT)
             description = 'N/A'
             if milestone['description']:
                 description = milestone['description']
-            md += '**[%s](%s)** | :page_facing_up: **Description:** *%s*\n' % (
-                repo, milestone['html_url'], description)
+            md += ('**[{}]({})** | :page_facing_up: '
+                   '**Description:** *{}*\n'.format(
+                       repo, milestone['html_url'], description))
             open_issues = milestone['open_issues']
             closed_issues = milestone['closed_issues']
             percent_complete = 100
@@ -343,31 +355,31 @@ Pulls Closed\n""" % label
                 percent_complete = 0
             elif open_issues != 0:
                 total_issues = open_issues + closed_issues
-                percent_complete = int(round((closed_issues / total_issues) \
-                    * 100))
+                percent_complete = int(
+                    round((closed_issues / total_issues) * 100))
             party = ''
             if percent_complete == 100:
                 party = ' :tada:'
 
-            md += """ | :checkered_flag: **Percentage Completed:** *%s*%%%s \
-\n""" % (percent_complete, party)
-            md += ' | :pencil2: **Opened:** *%s*\n' % \
-                milestone['open_issues']
-            md += ' | :closed_book: **Closed:** *%s*\n' % \
-                milestone['closed_issues']
+            md += (' | :checkered_flag: **Percentage Completed:** '
+                   '*{}*%{}\n'.format(percent_complete, party))
+            md += (' | :pencil2: **Opened:** *{}*\n'.format(
+                milestone['open_issues']))
+            md += (' | :closed_book: **Closed:** *{}*\n'.format(
+                milestone['closed_issues']))
             days = 0
             if due_on:
                 days = (due_on.date() - datetime.now().date()).days
             day_text = ''
             if days < 0:
-                day_text = '%s days ago' % abs(days)
+                day_text = '{} days ago'.format(abs(days))
             elif days == 0:
                 day_text = 'Today'
             elif days > 0:
-                day_text = '%s days from now' % days
+                day_text = '{} days from now'.format(days)
             if due_on:
-                md += ' | :calendar: **Due On:** *%s* (%s)\n' \
-                    % (due_on.strftime("%B %d, %Y"), day_text)
+                md += ' | :calendar: **Due On:** *{}* ({})\n'.format(
+                    due_on.strftime("%B %d, %Y"), day_text)
             else:
                 md += ' | :calendar: **Due On:** *N/A*\n'
             md += ' | \n'
@@ -376,8 +388,10 @@ Pulls Closed\n""" % label
 
     def get_markdown(self, username):
         markdown = '# Overview\n\n'
-        markdown += 'Tracking of `%s`\'s repositories for milestone `%s`.\n\n' % (
-            self.organization, self.milestone_filter)
+        markdown += ('Tracking of `{}`\'s repositories for '
+                     'milestone `{}`.\n\n'.format(
+                         self.organization,
+                         self.milestone_filter))
         markdown += '### Overall Stats\n\n'
         markdown += self.get_milestone_totals()
         markdown += '### Milstone Details by Repository:\n\n'
@@ -388,25 +402,32 @@ Pulls Closed\n""" % label
         markdown += '\n## :chart: Assignees\n\n'
         markdown += self.get_count_chart(self.assignee_counts, 'Assignee')
         markdown += '\n## :chart: Labels\n\n'
-        markdown += self.get_count_chart(self.label_counts, 'Label',
-            col_counts=False)
+        markdown += self.get_count_chart(self.label_counts,
+                                         'Label',
+                                         col_counts=False)
         markdown += '\n## :chart: Days\n\n'
         markdown += self.get_day_chart(self.day_opened_counts,
-            self.day_closed_counts)
+                                       self.day_closed_counts)
         markdown += '\n# Repository Details\n'
         markdown += self.get_issue_detail_listing()
         markdown += '\n# Notes\n\n'
-        markdown += """This issue is automatically updated by a [python script] \
-(https://github.com/azurestandard/issue-milestone-tracker). \
-This script goes through all `%s` repositories and lists issues \
-under the `%s` milestone.  There is no need to check off individual issues. \
-The script will is manually run to update the issue list periodically. \
-This script will check off closed items.  Comments on this issue will be \
-preserved between updates.\n\n""" % (self.organization, self.milestone_filter)
-        markdown += """:calendar: **Last Updated:** *%s* **By:** *%s*.  \
-**Via:** [issue-milestone-tracker]\
-(https://github.com/azurestandard/issue-milestone-tracker).""" % (
-            datetime.now().strftime("%B %d, %Y at %r"),
-            username)
+        markdown += ('This issue is automatically updated by a [python script]'
+                     '(https://github.com/azurestandard/issue-milestone-'
+                     'tracker).  This script goes through all `{}` '
+                     'repositories and lists issues under the `{}` '
+                     'milestone.  There is no need to check off '
+                     'individual issues. The script will is manually '
+                     'run to update the issue list periodically. '
+                     'This script will check off closed items.  '
+                     'Comments on this issue will be preserved '
+                     'between updates.\n\n'.format(
+                         self.organization,
+                         self.milestone_filter))
+        markdown += (':calendar: **Last Updated:** *{}* **By:** *{}*.'
+                     '**Via:** [issue-milestone-tracker]'
+                     '(https://github.com/azurestandard/issue-'
+                     'milestone-tracker)'.format(
+                         datetime.now().strftime("%B %d, %Y at %r"),
+                         username))
 
         return markdown
