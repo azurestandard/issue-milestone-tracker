@@ -288,7 +288,17 @@ class Builder:
                 box_state = '[X]'
                 strike = '~~'
 
-            md += '    - {} {}{} [#{}]({}): {}{}{}\n'.format(
+            date_string = ''
+            if issue['closed_at'] is not None:
+                date_string = 'Closed on {}'.format(datetime.strptime(
+                    issue['closed_at'],
+                    '%Y-%m-%dT%H:%M:%SZ'))
+            else:
+                date_string = 'Opened on {}'.format(datetime.strptime(
+                    issue['created_at'],
+                    '%Y-%m-%dT%H:%M:%SZ'))
+
+            md += '    - {} {}{} [#{}]({}): {}{}{} - {}\n'.format(
                 box_state,
                 strike,
                 issue['type'],
@@ -296,7 +306,8 @@ class Builder:
                 issue['url'],
                 issue['title'],
                 issue['labels'],
-                strike
+                strike,
+                date_string
                 )
 
         return md
