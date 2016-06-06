@@ -48,6 +48,7 @@ class Builder:
                     'none',
                     issue)
 
+            created_at = ''
             if issue['created_at'] is not None:
                 created_at = datetime.strptime(
                     issue['created_at'],
@@ -57,6 +58,7 @@ class Builder:
                     created_at.strftime('%Y-%m-%d'),
                     issue)
 
+            closed_at = ''
             if issue['closed_at'] is not None:
                 closed_at = datetime.strptime(
                     issue['closed_at'],
@@ -82,7 +84,9 @@ class Builder:
                     'url': issue['html_url'],
                     'title': issue['title'],
                     'labels': labels,
-                    'assignee': assignee
+                    'assignee': assignee,
+                    'created_at': created_at,
+                    'closed_at': closed_at
                 }
             ))
 
@@ -289,14 +293,10 @@ class Builder:
                 strike = '~~'
 
             date_string = ''
-            if issue['closed_at'] is not None:
-                date_string = 'Closed on {}'.format(datetime.strptime(
-                    issue['closed_at'],
-                    '%Y-%m-%dT%H:%M:%SZ'))
-            elif issue['created_at'] is not None:
-                date_string = 'Opened on {}'.format(datetime.strptime(
-                    issue['created_at'],
-                    '%Y-%m-%dT%H:%M:%SZ'))
+            if issue['closed_at'] != '':
+                date_string = 'Closed: {}'.format(issue['closed_at'].strftime('%m-%d-%Y'))
+            elif issue['created_at'] != '':
+                date_string = 'Opened: {}'.format(issue['created_at'].strftime('%m-%d-%Y'))
 
             md += '    - {} {}{} [#{}]({}): {}{}{} - {}\n'.format(
                 box_state,
