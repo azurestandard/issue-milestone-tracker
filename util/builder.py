@@ -293,7 +293,7 @@ class Builder:
                 date_string = 'Closed on {}'.format(datetime.strptime(
                     issue['closed_at'],
                     '%Y-%m-%dT%H:%M:%SZ'))
-            else:
+            elif issue['created_at'] is not None:
                 date_string = 'Opened on {}'.format(datetime.strptime(
                     issue['created_at'],
                     '%Y-%m-%dT%H:%M:%SZ'))
