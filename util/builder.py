@@ -267,6 +267,7 @@ class Builder:
         md = ''
 
         for issue in issues:
+            high = ''
             issue = issue[1]
             if repo != issue['repo']:
                 repo = issue['repo']
@@ -298,9 +299,13 @@ class Builder:
             elif issue['created_at'] != '':
                 date_string = 'Opened: {}'.format(issue['created_at'].strftime('%m-%d-%Y'))
 
-            md += '    - {} {}{} [#{}]({}): {}{}{} - {}\n'.format(
+            if 'High Priority' in issue['labels']:
+                high = ':fire:'
+
+            md += '    - {} {}{}{} [#{}]({}): {}{}{} - {}\n'.format(
                 box_state,
                 strike,
+                high,
                 issue['type'],
                 issue['number'],
                 issue['url'],
@@ -310,7 +315,10 @@ class Builder:
                 date_string
                 )
 
-        return md
+        if issue['state'] == 'open':
+            return md
+        else:
+            return ''
 
     def get_milestone_totals(self):
         percent_complete = 100

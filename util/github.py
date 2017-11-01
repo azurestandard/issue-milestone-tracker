@@ -1,6 +1,7 @@
 import json
 import requests
 
+from datetime import datetime, timedelta
 
 GITHUB_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -92,9 +93,36 @@ class GitHub:
         }
         return self.call('get', endpoint, params)
 
+    def get_closed_issues(self, org_name, repo_name, days):
+        endpoint = '{}/repos/{}/{}/issues'.format(
+            self.base_url,
+            org_name,
+            repo_name)
+
+        since = datetime.now() - timedelta(days=int(days))
+        since = since.strftime(GITHUB_DATE_FORMAT)
+
+        params = {
+            'state': 'closed',
+            'since': since,
+            'per_page': self.per_page
+        }
+        return self.call('get', endpoint, params)
+
     def update_issue(self, markdown, issue):
         endpoint = '{}/repos/{}'.format(self.base_url, issue)
         data = {
             "body": markdown
         }
         return self.call('patch', endpoint, data=json.dumps(data))
+
+    def get_repo_events(self, org_name, repo_name):
+        endpoint = '{}/repos/{}/{}/events'.format(
+            self.base_url,
+            org_name,
+            repo_name)
+
+        params = {
+            'per_page': self.per_page
+        }
+        return self.call('get', endpoint)
